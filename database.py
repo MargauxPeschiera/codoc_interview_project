@@ -171,6 +171,20 @@ def insert_document(connection, documents: Iterable[document.Doc]) -> None:
 
 
 def get_patient_num_from_ipp(ipp: int) -> int:
+    """
+    Get patient_num from DWH_PATIENT_IPPHIST table knowing the ipp.
+
+    Parameters
+    ----------
+    ipp : int
+        Ipp of the patient that we want to get the patient_num.
+
+    Returns
+    -------
+    int
+        Patient_num.
+
+    """
     connection = get_connection("drwh.db")
 
     cursor = connection.cursor()

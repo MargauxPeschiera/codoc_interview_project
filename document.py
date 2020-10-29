@@ -41,6 +41,25 @@ _REGEX_EXTENSION = re.compile(r"\w*\.(?P<type>pdf|docx|xlsx)")
 
 
 def get_info_from_filename(file_name: str) -> FileInfo:
+    """
+    Get IPP and doc_num info from the filename
+
+    Parameters
+    ----------
+    file_name : str
+        name of the file to get info from.
+
+    Raises
+    ------
+    Exception
+        Raise exception if the regex does not match.
+
+    Returns
+    -------
+    FileInfo
+        Return a file info tuple containing ipp and doc_num.
+
+    """
     rexres = _REGEX_FILENAME.match(file_name)
     if rexres is None:
         raise Exception(f"Can not parse {file_name}")
@@ -51,17 +70,28 @@ def get_info_from_filename(file_name: str) -> FileInfo:
 
 
 def convert_docx_to_ascii(file: str) -> str:
+    """
+    Convert docx file into ascii
+
+    """
     text = docx2txt.process(file)
     return text.replace('"', "")
 
 
 def convert_pdf_to_ascii(file_name: str) -> str:
+    """
+    Convert odf file into ascii
 
+    """
     raw = parser.from_file(file_name)
     return raw["content"].replace('"', "")
 
 
 def get_extension(file_name: str) -> str:
+    """
+    Get extension of a file using Regex
+
+    """
     rexres = _REGEX_EXTENSION.match(file_name)
     if rexres is None:
         raise Exception(f"Can not parse {file_name}")
@@ -69,6 +99,11 @@ def get_extension(file_name: str) -> str:
 
 
 def search_date(text: str) -> date:
+    """
+    Seacrh ate of file into text, checking if the date is > 2000.
+    I assumed if it's not,the date correspond to the patient's date of birth and not the date of the consultation
+
+    """
     matches = list(datefinder.find_dates(text))
     matches = [dat.date() for dat in matches]
     limit_date = datetime(2000, 1, 1).date()
@@ -84,6 +119,10 @@ def search_date(text: str) -> date:
 
 
 def search_author(text: str) -> str:
+    """
+    Search author in text, assuming it's the last "dr" in the file.
+
+    """
     text = text.lower()
     matches = ["".join(x) for x in re.findall(r"(?i)dr\s[a-z]+\s?[a-z]+", text)]
     if len(matches) > 0:
@@ -93,6 +132,20 @@ def search_author(text: str) -> str:
 
 
 def parse_all_files(directory_path: str) -> Iterable[Doc]:
+    """
+    Parsing all the files from a certain directory and create Doc tuple for each file.
+
+    Parameters
+    ----------
+    directory_path : str
+        Path of the directory that contain the file to poecess.
+
+    Yields
+    ------
+    Iterable[Doc]
+        Iterable containing Doc tuple and ready to be insert into Document table..
+
+    """
     import database as db
 
     entries = os.scandir(directory_path)
