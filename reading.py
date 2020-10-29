@@ -84,7 +84,7 @@ def add_id_column_to_df(df: pd.DataFrame) -> pd.DataFrame:
 def get_df_patient_table(df: pd.DataFrame) -> pd.DataFrame:
     df = add_id_column_to_df(df)
     df_dupli = df.duplicated(["NOM", "PRENOM", "DATE_NAISSANCE"], keep="first")
-    #Keep only the patient that are not duplicated 
+    # Keep only the patient that are not duplicated
     df = df[df_dupli == False]
 
     return df
@@ -93,7 +93,7 @@ def get_df_patient_table(df: pd.DataFrame) -> pd.DataFrame:
 def get_df_hist_table(df: pd.DataFrame) -> pd.DataFrame:
     df = add_id_column_to_df(df)
     df_dupli = df.duplicated(["NOM", "PRENOM", "DATE_NAISSANCE"], keep="first")
-    #keep all the rows but put the master column
+    # keep all the rows but put the master column
     df["master_patient_id"] = -df_dupli
     return df
 
@@ -178,5 +178,3 @@ def read_excel_file_patient_hist(path: str, sheet_name: str) -> Iterable[Patient
                 master_patient_id=int(row["master_patient_id"]),
             )
         )
-
-

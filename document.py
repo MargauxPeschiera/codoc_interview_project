@@ -92,8 +92,9 @@ def search_author(text: str) -> str:
         return None
 
 
-def parse_all_files(directory_path: str)-> Iterable[Doc]:
-    import db
+def parse_all_files(directory_path: str) -> Iterable[Doc]:
+    import database as db
+
     entries = os.scandir(directory_path)
     for entry in entries:
         file_name = entry.name
@@ -124,4 +125,3 @@ def parse_all_files(directory_path: str)-> Iterable[Doc]:
                 display_text=text,
                 author=search_author(text),
             )
-

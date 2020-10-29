@@ -19,25 +19,13 @@ from reading import (
 import document
 
 
-"""
-connection = sqlite3.connect("drwh.db")
-
-cursor = connection.cursor()
-
-cursor.execute("PRAGMA table_info([DWH_PATIENT])") 
-cursor.execute("SELECT COUNT(*) FROM DWH_PATIENT")
-result = cursor.fetchall() 
-
-for r in result:
-    print(r)
-  
-"""
-def get_connection(db:str):
+def get_connection(db: str):
     try:
         connection = sqlite3.connect(db)
     except sqlite3.Error as error:
         print(error)
     return connection
+
 
 def delete_rows_db(connection):
 
@@ -48,8 +36,9 @@ def delete_rows_db(connection):
     connection.commit()
 
 
-
-def insert_into_dwh_patient_ipphist(connection, patients: Iterable[PatientHistorique])->int:
+def insert_into_dwh_patient_ipphist(
+    connection, patients: Iterable[PatientHistorique]
+) -> int:
     cursor = connection.cursor()
     format_str = """
         INSERT INTO DWH_PATIENT_IPPHIST(
@@ -144,9 +133,9 @@ def insert_into_dwh_patient(connection, patients: Iterable[Patient]) -> int:
     return cursor.lastrowid
 
 
-def insert_document(connection, documents:Iterable[document.Doc])->None:
+def insert_document(connection, documents: Iterable[document.Doc]) -> None:
     cursor = connection.cursor()
-    
+
     format_str = """
         INSERT INTO DWH_DOCUMENT(
             PATIENT_NUM, 
@@ -175,17 +164,17 @@ def insert_document(connection, documents:Iterable[document.Doc])->None:
             doc_ori_code=d.doc_origine_code,
             text=d.display_text,
             author=d.author,
-           
         )
         cursor.execute(sql_command)
-    
+
     connection.commit()
 
-def get_patient_num_from_ipp(ipp:int)->int:
+
+def get_patient_num_from_ipp(ipp: int) -> int:
     connection = get_connection("drwh.db")
 
     cursor = connection.cursor()
-    format_str="""SELECT PATIENT_NUM FROM DWH_PATIENT_IPPHIST WHERE HOSPITAL_PATIENT_ID="{ipp}" AND MASTER_PATIENT_ID=1"""
+    format_str = """SELECT PATIENT_NUM FROM DWH_PATIENT_IPPHIST WHERE HOSPITAL_PATIENT_ID="{ipp}" AND MASTER_PATIENT_ID=1"""
     sql_command = format_str.format(ipp=ipp)
     cursor.execute(sql_command)
     row = cursor.fetchone()
@@ -194,21 +183,23 @@ def get_patient_num_from_ipp(ipp:int)->int:
     return row[0]
 
 
-if __name__ == '__main__':            
-    
+if __name__ == "__main__":
+
     connection = get_connection("drwh.db")
-    
+
     delete_rows_db(connection)
-    
-    patients = read_excel_file_patient("fichiers source/export_patient.xlsx", "Export Worksheet")
+
+    patients = read_excel_file_patient(
+        "fichiers source/export_patient.xlsx", "Export Worksheet"
+    )
     insert_into_dwh_patient(connection, patients)
-    
-    
-    patients = read_excel_file_patient_hist("fichiers source/export_patient.xlsx", "Export Worksheet")
+
+    patients = read_excel_file_patient_hist(
+        "fichiers source/export_patient.xlsx", "Export Worksheet"
+    )
     insert_into_dwh_patient_ipphist(connection, patients)
 
-    
     docs = document.parse_all_files("fichiers source/")
     insert_document(connection, docs)
-    
+
     connection.close()
