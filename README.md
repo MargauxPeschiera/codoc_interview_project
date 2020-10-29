@@ -21,4 +21,4 @@ Data-engineer interview project for Codoc
 - [database.py](database.py) : containing the database related function and inserting the data into ([drwh.db](drwh.db))
 - [reading.py](reading.py) : containing functions to process excel file 
 - [document.py](document.py) : containing functions to process docx and pdf files
-- [fichiers source](fichiers source) : folder containing the excel, docx and pdf files to process
+- fichiers source : folder containing the excel, docx and pdf files to process
