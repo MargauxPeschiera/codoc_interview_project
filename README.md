@@ -1,7 +1,7 @@
 # codoc_interview_project
 
 Data-engineer interview project for Codoc
-2 exercices explained into [exercices.pdf](exercices.pdf)
+: 2 exercices explained into [exercices.pdf](exercices.pdf)
 
 ## How to use the git repository 
 
