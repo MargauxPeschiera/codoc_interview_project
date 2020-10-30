@@ -6,7 +6,7 @@ Created on Wed Oct 28 12:34:21 2020
 @author: margauxpeschiera
 """
 import sqlite3
-
+from tqdm import tqdm
 from typing import Iterable
 
 from reading import (
@@ -133,7 +133,7 @@ def insert_into_dwh_patient(connection, patients: Iterable[Patient]) -> int:
     return cursor.lastrowid
 
 
-def insert_document(connection, documents: Iterable[document.Doc]) -> None:
+def insert_document(connection, documents: Iterable[document.Doc]) -> int:
     cursor = connection.cursor()
 
     format_str = """
@@ -168,6 +168,7 @@ def insert_document(connection, documents: Iterable[document.Doc]) -> None:
         cursor.execute(sql_command)
 
     connection.commit()
+    return cursor.lastrowid
 
 
 def get_patient_num_from_ipp(ipp: int) -> int:
@@ -206,14 +207,25 @@ if __name__ == "__main__":
     patients = read_excel_file_patient(
         "fichiers source/export_patient.xlsx", "Export Worksheet"
     )
-    insert_into_dwh_patient(connection, patients)
+
+    for i in tqdm(
+        range(insert_into_dwh_patient(connection, patients)), desc="Inserting patient"
+    ):
+        pass
 
     patients = read_excel_file_patient_hist(
         "fichiers source/export_patient.xlsx", "Export Worksheet"
     )
-    insert_into_dwh_patient_ipphist(connection, patients)
+
+    for i in tqdm(
+        range(insert_into_dwh_patient_ipphist(connection, patients)),
+        desc="Inserting patient ipphist",
+    ):
+        pass
 
     docs = document.parse_all_files("fichiers source/")
-    insert_document(connection, docs)
+
+    for i in tqdm(range(insert_document(connection, docs)), desc="Inserting document"):
+        pass
 
     connection.close()
